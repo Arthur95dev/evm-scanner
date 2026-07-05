@@ -1,6 +1,6 @@
 # 🛡️ EVM Bytecode Security Scanner
 
-[![Rust](https://img.shields.io/badge/Rust-1.75%2B-orange?logo=rust)](https://rust-lang.org)
+[![Rust](https://img.shields.io/badge/Rust-1.96%2B-orange?logo=rust)](https://rust-lang.org)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 A **static analyzer for Ethereum Virtual Machine (EVM) bytecode**, written in Rust.  
