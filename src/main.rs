@@ -2,8 +2,8 @@ use serde_json::Value;
 use std::env;
 use std::fs;
 
-mod opcodes;
-use opcodes::{Instruction, Opcode};
+mod bytecode;
+mod evm;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -50,32 +50,10 @@ fn main() {
             return;
         }
     };
-    
-    let mut offset: usize = 0;
-    while offset < bytecode_bytes.len() {
-        let inst = Instruction::from_byte(bytecode_bytes[offset]);
-        let size = inst.size();
 
-        // Проверяем выход за границы (на случай битого байткода)
-        if offset + size > bytecode_bytes.len() {
-            eprintln!(
-                "Warning: instruction at offset {} exceeds bytecode length, stopping.",
-                offset
-            );
-            break;
-        }
+    let instructions = bytecode::decoder::decode(&bytecode_bytes);
 
-        if let Instruction::Op(op) = inst {
-            if op.is_dangerous() {
-                println!(
-                    "Offset 0x{:04x} ({}): {} - potential vulnerability",
-                    offset,
-                    offset,
-                    op.name()
-                );
-            }
-        }
-
-        offset += size;
+    for instruction in instructions {
+        println!("{:?}", instruction);
     }
 }

@@ -1,4 +1,4 @@
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug)]
 pub enum Opcode {
     // Арифметика
     STOP = 0x00,
@@ -61,28 +61,42 @@ impl Opcode {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug)]
 pub enum Instruction {
-    Op(Opcode),
-    Push(u8),
+    Op {
+        opcode: Opcode,
+        offset: usize,
+    },
+
+    Push {
+        size: u8,
+        value: Vec<u8>,
+        offset: usize,
+    },
+
+    Unknown {
+        byte: u8,
+        offset: usize,
+    },
 }
 
 impl Instruction {
-    /// Распарсить следующий опкод из байта в байткоде.
-    pub fn from_byte(b: u8) -> Self {
-        if (0x60..=0x7f).contains(&b) {
-            Instruction::Push(b - 0x60 + 1) // 1..32 байт данных
-        } else {
-            // Если нераспознанный опкод – считаем его пустой Instruction без имени
-            Instruction::Op(Opcode::from_byte(b).unwrap_or(Opcode::STOP))
-        }
-    }
+    // /// Распарсить следующий опкод из байта в байткоде.
+    // pub fn from_byte(b: u8) -> Self {
+    //     if (0x60..=0x7f).contains(&b) {
+    //         Instruction::Push(b - 0x60 + 1) // 1..32 байт данных
+    //     } else {
+    //         // Если нераспознанный опкод – считаем его пустой Instruction без имени
+    //         Instruction::Op(Opcode::from_byte(b).unwrap_or(Opcode::STOP))
+    //     }
+    // }
 
-    /// Полный размер инструкции в байтах (опкод + данные для PUSH)
-    pub fn size(self) -> usize {
-        match self {
-            Instruction::Op(_) => 1,
-            Instruction::Push(n) => 1 + n as usize,
-        }
-    }
+    // /// Полный размер инструкции в байтах (опкод + данные для PUSH)
+    // pub fn size(self) -> usize {
+    //     match self {
+    //         Instruction::Op(_) => 1,
+    //         Instruction::Push(n) => 1 + n as usize,
+    //         Instruction::Unknown(u8)
+    //     }
+    // }
 }
