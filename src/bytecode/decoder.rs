@@ -1,4 +1,5 @@
-use crate::evm::opcodes::{Instruction, Opcode};
+use crate::evm::opcodes::Opcode;
+use crate::evm::instruction::Instruction;
 
 pub fn decode(bytecode: &[u8]) -> Vec<Instruction> {
     let mut instructions = Vec::new();
@@ -15,7 +16,14 @@ pub fn decode(bytecode: &[u8]) -> Vec<Instruction> {
             let end = start + size as usize;
 
             if end > bytecode.len() {
-                instructions.push(Instruction::Unknown { byte, offset });
+                let available = bytecode.len().saturating_sub(start);
+
+                instructions.push(Instruction::InvalidPush {
+                    opcode: byte,
+                    expected: size,
+                    available,
+                    offset,
+                });
 
                 break;
             }

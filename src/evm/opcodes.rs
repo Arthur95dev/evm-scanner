@@ -1,11 +1,127 @@
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Opcode {
-    // Арифметика
+    // 0x00 range - Stop and Arithmetic Operations
     STOP = 0x00,
     ADD = 0x01,
     MUL = 0x02,
+    SUB = 0x03,
+    DIV = 0x04,
+    SDIV = 0x05,
+    MOD = 0x06,
+    SMOD = 0x07,
+    ADDMOD = 0x08,
+    MULMOD = 0x09,
+    EXP = 0x0a,
+    SIGNEXTEND = 0x0b,
 
-    // Опасные / интересные для безопасности
+    // 0x10 range - Comparison & Bitwise Logic
+    LT = 0x10,
+    GT = 0x11,
+    SLT = 0x12,
+    SGT = 0x13,
+    EQ = 0x14,
+    ISZERO = 0x15,
+    AND = 0x16,
+    OR = 0x17,
+    XOR = 0x18,
+    NOT = 0x19,
+    BYTE = 0x1a,
+    SHL = 0x1b,
+    SHR = 0x1c,
+    SAR = 0x1d,
+
+    // 0x20 range - SHA3
+    SHA3 = 0x20,
+
+    // 0x30 range - Environmental Information
+    ADDRESS = 0x30,
+    BALANCE = 0x31,
+    ORIGIN = 0x32,
+    CALLER = 0x33,
+    CALLVALUE = 0x34,
+    CALLDATALOAD = 0x35,
+    CALLDATASIZE = 0x36,
+    CALLDATACOPY = 0x37,
+    CODESIZE = 0x38,
+    CODECOPY = 0x39,
+    GASPRICE = 0x3a,
+    EXTCODESIZE = 0x3b,
+    EXTCODECOPY = 0x3c,
+    RETURNDATASIZE = 0x3d,
+    RETURNDATACOPY = 0x3e,
+    EXTCODEHASH = 0x3f,
+
+    // 0x40 range - Block Information
+    BLOCKHASH = 0x40,
+    COINBASE = 0x41,
+    TIMESTAMP = 0x42,
+    NUMBER = 0x43,
+    PREVRANDAO = 0x44,
+    GASLIMIT = 0x45,
+    CHAINID = 0x46,
+    SELFBALANCE = 0x47,
+    BASEFEE = 0x48,
+
+    // 0x50 range - Stack, Memory, Storage and Flow
+    POP = 0x50,
+    MLOAD = 0x51,
+    MSTORE = 0x52,
+    MSTORE8 = 0x53,
+    SLOAD = 0x54,
+    SSTORE = 0x55,
+    JUMP = 0x56,
+    JUMPI = 0x57,
+    PC = 0x58,
+    MSIZE = 0x59,
+    GAS = 0x5a,
+    JUMPDEST = 0x5b,
+
+    // 0x60 - 0x7f PUSH handled separately
+
+    // 0x80 range DUP
+    DUP1 = 0x80,
+    DUP2 = 0x81,
+    DUP3 = 0x82,
+    DUP4 = 0x83,
+    DUP5 = 0x84,
+    DUP6 = 0x85,
+    DUP7 = 0x86,
+    DUP8 = 0x87,
+    DUP9 = 0x88,
+    DUP10 = 0x89,
+    DUP11 = 0x8a,
+    DUP12 = 0x8b,
+    DUP13 = 0x8c,
+    DUP14 = 0x8d,
+    DUP15 = 0x8e,
+    DUP16 = 0x8f,
+
+    // 0x90 range SWAP
+    SWAP1 = 0x90,
+    SWAP2 = 0x91,
+    SWAP3 = 0x92,
+    SWAP4 = 0x93,
+    SWAP5 = 0x94,
+    SWAP6 = 0x95,
+    SWAP7 = 0x96,
+    SWAP8 = 0x97,
+    SWAP9 = 0x98,
+    SWAP10 = 0x99,
+    SWAP11 = 0x9a,
+    SWAP12 = 0x9b,
+    SWAP13 = 0x9c,
+    SWAP14 = 0x9d,
+    SWAP15 = 0x9e,
+    SWAP16 = 0x9f,
+
+    // 0xa0 range Logs
+    LOG0 = 0xa0,
+    LOG1 = 0xa1,
+    LOG2 = 0xa2,
+    LOG3 = 0xa3,
+    LOG4 = 0xa4,
+
+    // 0xf0 range System
     CREATE = 0xf0,
     CALL = 0xf1,
     CALLCODE = 0xf2,
@@ -14,6 +130,7 @@ pub enum Opcode {
     CREATE2 = 0xf5,
     STATICCALL = 0xfa,
     REVERT = 0xfd,
+    INVALID = 0xfe,
     SELFDESTRUCT = 0xff,
 }
 
@@ -23,24 +140,240 @@ impl Opcode {
             0x00 => Some(Self::STOP),
             0x01 => Some(Self::ADD),
             0x02 => Some(Self::MUL),
+            0x03 => Some(Self::SUB),
+            0x04 => Some(Self::DIV),
+            0x05 => Some(Self::SDIV),
+            0x06 => Some(Self::MOD),
+            0x07 => Some(Self::SMOD),
+            0x08 => Some(Self::ADDMOD),
+            0x09 => Some(Self::MULMOD),
+            0x0a => Some(Self::EXP),
+            0x0b => Some(Self::SIGNEXTEND),
+
+            0x10 => Some(Self::LT),
+            0x11 => Some(Self::GT),
+            0x12 => Some(Self::SLT),
+            0x13 => Some(Self::SGT),
+            0x14 => Some(Self::EQ),
+            0x15 => Some(Self::ISZERO),
+            0x16 => Some(Self::AND),
+            0x17 => Some(Self::OR),
+            0x18 => Some(Self::XOR),
+            0x19 => Some(Self::NOT),
+            0x1a => Some(Self::BYTE),
+            0x1b => Some(Self::SHL),
+            0x1c => Some(Self::SHR),
+            0x1d => Some(Self::SAR),
+
+            0x20 => Some(Self::SHA3),
+
+            0x30 => Some(Self::ADDRESS),
+            0x31 => Some(Self::BALANCE),
+            0x32 => Some(Self::ORIGIN),
+            0x33 => Some(Self::CALLER),
+            0x34 => Some(Self::CALLVALUE),
+            0x35 => Some(Self::CALLDATALOAD),
+            0x36 => Some(Self::CALLDATASIZE),
+            0x37 => Some(Self::CALLDATACOPY),
+            0x38 => Some(Self::CODESIZE),
+            0x39 => Some(Self::CODECOPY),
+            0x3a => Some(Self::GASPRICE),
+            0x3b => Some(Self::EXTCODESIZE),
+            0x3c => Some(Self::EXTCODECOPY),
+            0x3d => Some(Self::RETURNDATASIZE),
+            0x3e => Some(Self::RETURNDATACOPY),
+            0x3f => Some(Self::EXTCODEHASH),
+
+            0x40 => Some(Self::BLOCKHASH),
+            0x41 => Some(Self::COINBASE),
+            0x42 => Some(Self::TIMESTAMP),
+            0x43 => Some(Self::NUMBER),
+            0x44 => Some(Self::PREVRANDAO),
+            0x45 => Some(Self::GASLIMIT),
+            0x46 => Some(Self::CHAINID),
+            0x47 => Some(Self::SELFBALANCE),
+            0x48 => Some(Self::BASEFEE),
+
+            0x50 => Some(Self::POP),
+            0x51 => Some(Self::MLOAD),
+            0x52 => Some(Self::MSTORE),
+            0x53 => Some(Self::MSTORE8),
+            0x54 => Some(Self::SLOAD),
+            0x55 => Some(Self::SSTORE),
+            0x56 => Some(Self::JUMP),
+            0x57 => Some(Self::JUMPI),
+            0x58 => Some(Self::PC),
+            0x59 => Some(Self::MSIZE),
+            0x5a => Some(Self::GAS),
+            0x5b => Some(Self::JUMPDEST),
+
+            0x80 => Some(Self::DUP1),
+            0x81 => Some(Self::DUP2),
+            0x82 => Some(Self::DUP3),
+            0x83 => Some(Self::DUP4),
+            0x84 => Some(Self::DUP5),
+            0x85 => Some(Self::DUP6),
+            0x86 => Some(Self::DUP7),
+            0x87 => Some(Self::DUP8),
+            0x88 => Some(Self::DUP9),
+            0x89 => Some(Self::DUP10),
+            0x8a => Some(Self::DUP11),
+            0x8b => Some(Self::DUP12),
+            0x8c => Some(Self::DUP13),
+            0x8d => Some(Self::DUP14),
+            0x8e => Some(Self::DUP15),
+            0x8f => Some(Self::DUP16),
+
+            0x90 => Some(Self::SWAP1),
+            0x91 => Some(Self::SWAP2),
+            0x92 => Some(Self::SWAP3),
+            0x93 => Some(Self::SWAP4),
+            0x94 => Some(Self::SWAP5),
+            0x95 => Some(Self::SWAP6),
+            0x96 => Some(Self::SWAP7),
+            0x97 => Some(Self::SWAP8),
+            0x98 => Some(Self::SWAP9),
+            0x99 => Some(Self::SWAP10),
+            0x9a => Some(Self::SWAP11),
+            0x9b => Some(Self::SWAP12),
+            0x9c => Some(Self::SWAP13),
+            0x9d => Some(Self::SWAP14),
+            0x9e => Some(Self::SWAP15),
+            0x9f => Some(Self::SWAP16),
+
+            0xa0 => Some(Self::LOG0),
+            0xa1 => Some(Self::LOG1),
+            0xa2 => Some(Self::LOG2),
+            0xa3 => Some(Self::LOG3),
+            0xa4 => Some(Self::LOG4),
+
             0xf0 => Some(Self::CREATE),
             0xf1 => Some(Self::CALL),
             0xf2 => Some(Self::CALLCODE),
             0xf3 => Some(Self::RETURN),
             0xf4 => Some(Self::DELEGATECALL),
             0xf5 => Some(Self::CREATE2),
+
             0xfa => Some(Self::STATICCALL),
             0xfd => Some(Self::REVERT),
+            0xfe => Some(Self::INVALID),
             0xff => Some(Self::SELFDESTRUCT),
+
             _ => None,
         }
     }
-
     pub fn name(self) -> &'static str {
         match self {
             Self::STOP => "STOP",
             Self::ADD => "ADD",
             Self::MUL => "MUL",
+            Self::SUB => "SUB",
+            Self::DIV => "DIV",
+            Self::SDIV => "SDIV",
+            Self::MOD => "MOD",
+            Self::SMOD => "SMOD",
+            Self::ADDMOD => "ADDMOD",
+            Self::MULMOD => "MULMOD",
+            Self::EXP => "EXP",
+            Self::SIGNEXTEND => "SIGNEXTEND",
+
+            Self::LT => "LT",
+            Self::GT => "GT",
+            Self::SLT => "SLT",
+            Self::SGT => "SGT",
+            Self::EQ => "EQ",
+            Self::ISZERO => "ISZERO",
+            Self::AND => "AND",
+            Self::OR => "OR",
+            Self::XOR => "XOR",
+            Self::NOT => "NOT",
+            Self::BYTE => "BYTE",
+            Self::SHL => "SHL",
+            Self::SHR => "SHR",
+            Self::SAR => "SAR",
+
+            Self::SHA3 => "SHA3",
+
+            Self::ADDRESS => "ADDRESS",
+            Self::BALANCE => "BALANCE",
+            Self::ORIGIN => "ORIGIN",
+            Self::CALLER => "CALLER",
+            Self::CALLVALUE => "CALLVALUE",
+            Self::CALLDATALOAD => "CALLDATALOAD",
+            Self::CALLDATASIZE => "CALLDATASIZE",
+            Self::CALLDATACOPY => "CALLDATACOPY",
+            Self::CODESIZE => "CODESIZE",
+            Self::CODECOPY => "CODECOPY",
+            Self::GASPRICE => "GASPRICE",
+            Self::EXTCODESIZE => "EXTCODESIZE",
+            Self::EXTCODECOPY => "EXTCODECOPY",
+            Self::RETURNDATASIZE => "RETURNDATASIZE",
+            Self::RETURNDATACOPY => "RETURNDATACOPY",
+            Self::EXTCODEHASH => "EXTCODEHASH",
+
+            Self::BLOCKHASH => "BLOCKHASH",
+            Self::COINBASE => "COINBASE",
+            Self::TIMESTAMP => "TIMESTAMP",
+            Self::NUMBER => "NUMBER",
+            Self::PREVRANDAO => "PREVRANDAO",
+            Self::GASLIMIT => "GASLIMIT",
+            Self::CHAINID => "CHAINID",
+            Self::SELFBALANCE => "SELFBALANCE",
+            Self::BASEFEE => "BASEFEE",
+
+            Self::POP => "POP",
+            Self::MLOAD => "MLOAD",
+            Self::MSTORE => "MSTORE",
+            Self::MSTORE8 => "MSTORE8",
+            Self::SLOAD => "SLOAD",
+            Self::SSTORE => "SSTORE",
+            Self::JUMP => "JUMP",
+            Self::JUMPI => "JUMPI",
+            Self::PC => "PC",
+            Self::MSIZE => "MSIZE",
+            Self::GAS => "GAS",
+            Self::JUMPDEST => "JUMPDEST",
+
+            Self::DUP1 => "DUP1",
+            Self::DUP2 => "DUP2",
+            Self::DUP3 => "DUP3",
+            Self::DUP4 => "DUP4",
+            Self::DUP5 => "DUP5",
+            Self::DUP6 => "DUP6",
+            Self::DUP7 => "DUP7",
+            Self::DUP8 => "DUP8",
+            Self::DUP9 => "DUP9",
+            Self::DUP10 => "DUP10",
+            Self::DUP11 => "DUP11",
+            Self::DUP12 => "DUP12",
+            Self::DUP13 => "DUP13",
+            Self::DUP14 => "DUP14",
+            Self::DUP15 => "DUP15",
+            Self::DUP16 => "DUP16",
+
+            Self::SWAP1 => "SWAP1",
+            Self::SWAP2 => "SWAP2",
+            Self::SWAP3 => "SWAP3",
+            Self::SWAP4 => "SWAP4",
+            Self::SWAP5 => "SWAP5",
+            Self::SWAP6 => "SWAP6",
+            Self::SWAP7 => "SWAP7",
+            Self::SWAP8 => "SWAP8",
+            Self::SWAP9 => "SWAP9",
+            Self::SWAP10 => "SWAP10",
+            Self::SWAP11 => "SWAP11",
+            Self::SWAP12 => "SWAP12",
+            Self::SWAP13 => "SWAP13",
+            Self::SWAP14 => "SWAP14",
+            Self::SWAP15 => "SWAP15",
+            Self::SWAP16 => "SWAP16",
+
+            Self::LOG0 => "LOG0",
+            Self::LOG1 => "LOG1",
+            Self::LOG2 => "LOG2",
+            Self::LOG3 => "LOG3",
+            Self::LOG4 => "LOG4",
+
             Self::CREATE => "CREATE",
             Self::CALL => "CALL",
             Self::CALLCODE => "CALLCODE",
@@ -49,54 +382,11 @@ impl Opcode {
             Self::CREATE2 => "CREATE2",
             Self::STATICCALL => "STATICCALL",
             Self::REVERT => "REVERT",
+            Self::INVALID => "INVALID",
             Self::SELFDESTRUCT => "SELFDESTRUCT",
         }
     }
-
-    pub fn is_dangerous(self) -> bool {
-        matches!(
-            self,
-            Self::CALL | Self::DELEGATECALL | Self::CALLCODE | Self::SELFDESTRUCT
-        )
+    pub fn byte(self) -> u8 {
+        self as u8
     }
-}
-
-#[derive(Debug)]
-pub enum Instruction {
-    Op {
-        opcode: Opcode,
-        offset: usize,
-    },
-
-    Push {
-        size: u8,
-        value: Vec<u8>,
-        offset: usize,
-    },
-
-    Unknown {
-        byte: u8,
-        offset: usize,
-    },
-}
-
-impl Instruction {
-    // /// Распарсить следующий опкод из байта в байткоде.
-    // pub fn from_byte(b: u8) -> Self {
-    //     if (0x60..=0x7f).contains(&b) {
-    //         Instruction::Push(b - 0x60 + 1) // 1..32 байт данных
-    //     } else {
-    //         // Если нераспознанный опкод – считаем его пустой Instruction без имени
-    //         Instruction::Op(Opcode::from_byte(b).unwrap_or(Opcode::STOP))
-    //     }
-    // }
-
-    // /// Полный размер инструкции в байтах (опкод + данные для PUSH)
-    // pub fn size(self) -> usize {
-    //     match self {
-    //         Instruction::Op(_) => 1,
-    //         Instruction::Push(n) => 1 + n as usize,
-    //         Instruction::Unknown(u8)
-    //     }
-    // }
 }
