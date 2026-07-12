@@ -2,8 +2,6 @@ use serde_json::Value;
 use std::env;
 use std::fs;
 
-use crate::analysis::finding;
-
 mod analysis;
 mod bytecode;
 mod evm;
