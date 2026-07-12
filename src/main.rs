@@ -2,6 +2,9 @@ use serde_json::Value;
 use std::env;
 use std::fs;
 
+use crate::analysis::finding;
+
+mod analysis;
 mod bytecode;
 mod evm;
 
@@ -53,7 +56,9 @@ fn main() {
 
     let instructions = bytecode::decoder::decode(&bytecode_bytes);
 
-    for instruction in instructions {
-        println!("{:?}", instruction);
+    let findings = analysis::scanner::Scanner::scan(&instructions);
+
+    for finding in findings {
+        println!("{}", finding);
     }
 }
