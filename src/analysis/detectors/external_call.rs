@@ -1,6 +1,6 @@
 use crate::analysis::detectors::Detector;
 use crate::analysis::finding::{Finding, Severity};
-use crate::evm::instruction::{Instruction};
+use crate::evm::instruction::Instruction;
 use crate::evm::opcodes::Opcode;
 
 pub struct ExternalCallDetector;
