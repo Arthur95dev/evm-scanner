@@ -2,6 +2,8 @@ use serde_json::Value;
 use std::env;
 use std::fs;
 
+use crate::analysis::scanner::Scanner;
+
 mod analysis;
 mod bytecode;
 mod evm;
@@ -53,8 +55,10 @@ fn main() {
     };
 
     let instructions = bytecode::decoder::decode(&bytecode_bytes);
+    
+    let scanner = Scanner::new();
 
-    let findings = analysis::scanner::Scanner::scan(&instructions);
+    let findings = scanner.scan(&instructions);
 
     for finding in findings {
         println!("{}", finding);
