@@ -63,6 +63,27 @@ mod tests {
 
         assert_eq!(first, &expected_first);
         assert_eq!(second, &expected_second);
+    }
 
+    #[test]
+    fn test_push32() {
+        let bytecode = vec![
+            0x7f, // PUSH32
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+            25, 26, 27, 28, 29, 30, 31, 32,
+        ];
+
+        let instructions = decode(&bytecode);
+
+        let mut interpreter = Interpreter::new();
+        interpreter.execute(&instructions);
+
+        let mut expected = [0u8; 32];
+        expected.copy_from_slice(&[
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+            25, 26, 27, 28, 29, 30, 31, 32,
+        ]);
+
+        assert_eq!(interpreter.stack.get(0), Some(&expected));
     }
 }
