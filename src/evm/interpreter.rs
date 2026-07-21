@@ -1,5 +1,6 @@
-use crate::evm::stack::Stack;
+use crate::bytecode::decoder::decode;
 use crate::evm::instruction::Instruction;
+use crate::evm::stack::Stack;
 
 pub struct Interpreter {
     stack: Stack,
@@ -7,7 +8,9 @@ pub struct Interpreter {
 
 impl Interpreter {
     pub fn new() -> Self {
-        Self { stack: Stack::new() }
+        Self {
+            stack: Stack::new(),
+        }
     }
 
     pub fn execute(&mut self, instructions: &[Instruction]) {
@@ -18,14 +21,48 @@ impl Interpreter {
 
     pub fn execute_instruction(&mut self, instruction: &Instruction) {
         match instruction {
-            Instruction::Push { size, value, offset } => {
+            Instruction::Push { size: _, value, .. } => {
                 // Возможная замена
-                let diff = 32 as usize - *size as usize;
-                let mut word= [0u8; 32];
+                let diff = 32 - value.len();
+                let mut word = [0u8; 32];
                 word[diff..].copy_from_slice(value.as_slice());
                 self.stack.push(word);
             }
             _ => {}
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_push1_values() {
+        let bytecode = vec![
+            0x60, 0x02, // PUSH1 2
+            0x60, 0x03, // PUSH1 3
+            0x00, // STOP
+        ];
+
+        let instructions = decode(&bytecode);
+
+        let mut interpreter = Interpreter::new();
+        interpreter.execute(&instructions);
+
+        assert_eq!(interpreter.stack.len(), 2);
+
+        let first = interpreter.stack.get(0).unwrap();
+        let second = interpreter.stack.get(1).unwrap();
+
+        let mut expected_first = [0u8; 32];
+        expected_first[31] = 0x02;
+
+        let mut expected_second = [0u8; 32];
+        expected_second[31] = 0x03;
+
+        assert_eq!(first, &expected_first);
+        assert_eq!(second, &expected_second);
+
     }
 }
